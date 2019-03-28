@@ -1,33 +1,41 @@
-## This function creates a special "matrix" object that can cache its inverse
 
-makeCacheMatrix <- function(x = matrix()) { ## define the argument with default mode of "matrix"
-  inv <- NULL                             ## initialize inv as NULL; will hold value of matrix inverse 
-  set <- function(y) {                    ## define the set function to assign new 
-    x <<- y                             ## value of matrix in parent environment
-    inv <<- NULL                        ## if there is a new matrix, reset inv to NULL
+
+#This function creates a matrix object that can cache its inverse
+
+makeCacheMatrix <- function(x = matrix()) {
+  inv <- NULL 
+  set <- function(y) { #this will set the inverse values from the vector
+    x <<- y
+    inv <-- NULL
   }
-  get <- function() x                     ## define the get fucntion - returns value of the matrix argument
+  get <- function() x #this will get the inverse values from the vector
+  setInverse <- function(inverse) inv <<- inverse #this will set the inverse matrix 
   
-  setinverse <- function(inverse) inv <<- inverse  ## assigns value of inv in parent environment
-  getinverse <- function() inv                     ## gets the value of inv where called
-  list(set = set, get = get, setinverse = setinverse, getinverse = getinverse)  ## you need this in order to refer 
-  ## to the functions with the $ operator
+  getInverse <- function() inv #this will get the inverse matrix created
+  list(set = set, get = get, 
+       setInverse = setInverse, 
+       getInverse = getInverse)
 }
 
-
-## This function computes the inverse of the special "matrix" returned by makeCacheMatrix above.
-## If the inverse has already been calculated (and the matrix has not changed),
-## then cacheSolve will retrieve the inverse from the cache
+#This function computes the inverse of the matrix returned by makeCacheMatrix above. 
+#If the inverse has already been created, then it will simply retrieve the inverse from the cache. 
 
 cacheSolve <- function(x, ...) {
-  ## Return a matrix that is the inverse of 'x'
-  inv <- x$getinverse()
+  inv <- x$getInverse() #this checks to see if the inverse matrix has already been created
   if(!is.null(inv)) {
-    message("getting cached data")
-    return(inv)
+    message("getting cached data") 
+    return(inv) 
   }
-  data <- x$get()
+  
+  #this gets the inverse from the cache once validated that it has already been created via the setInverse function   
+  data <- x$get() 
   inv <- solve(data, ...)
-  x$setinverse(inv)
+  x$setInverse(inv)
   inv
 }
+#finally, this function will get the inverse matrix from the cache   
+InverseMatrix <- makeCacheMatrix(matrix(1:4, 2, 2))
+InverseMatrix$get()
+InverseMatrix$getInverse()
+
+cacheSolve(InverseMatrix) 
